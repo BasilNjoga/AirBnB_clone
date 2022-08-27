@@ -11,9 +11,3 @@ class BaseModel:
 
     def __str__(self):
         return "[BaseModel] (" + self.id + ")" + self.dict
-
-    def save(self):
-        self.updated_at = 
-    
-    def to_dict(self):
-        return self.dict
