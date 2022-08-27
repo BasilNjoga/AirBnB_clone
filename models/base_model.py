@@ -5,7 +5,7 @@ This is a file for all my models
 import uuid
 class BaseModel:
     """ defines all commond attributes and methods """
-    def __init__(self,id,created_at, updated_at):
+    def __init__(self):
         self.id = str(uuid.uuid4())
 
 
