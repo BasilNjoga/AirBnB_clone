@@ -23,4 +23,4 @@ class BaseModel:
         self.updated_at = datetime.now()
     
     def to_dict(self):
-        return dict()
+        return self.__dict__
