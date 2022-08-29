@@ -20,6 +20,7 @@ class BaseModel:
 
     def save(self):
         self.updated_at = datetime.now()
+        models.storage.save()
 
     def to_dict(self):
         """ Returns dictionary representation of all key/vlaues of dict"""
