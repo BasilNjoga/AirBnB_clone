@@ -12,7 +12,6 @@ class BaseModel:
         self.id = str(uuid.uuid4())
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
-        self.__class__ = self.__class__
 
 
     def __str__(self):
@@ -23,8 +22,9 @@ class BaseModel:
         self.updated_at = datetime.now()
     
     def to_dict(self):
+        """ Returns dictionary representation of all key/vlaues of dict"""
         mydict = dict(self.__dict__)
-        mydict["self.created_at"] = self.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f")
+        mydict["created_at"] = self.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f")
         mydict["self.updated_at"] = self.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f")
         mydict["__class__"] =  type(self).__name__
         return mydict
