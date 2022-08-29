@@ -16,7 +16,7 @@ class BaseModel:
 
 
     def __str__(self):
-        return  BaseModel.__name__ + "(" + self.id + ")" + str(self.__dict__)
+        return  type(self).__name__ + "(" + self.id + ")" + str(self.__dict__)
 
     def save(self):
         change = datetime.now()
@@ -24,7 +24,7 @@ class BaseModel:
     
     def to_dict(self):
         mydict = dict(self.__dict__)
-        mydict["self.created_at"] = self.created_at.isoformat()
-        mydict["self.updated_at"] = self.updated_at.isoformat()
+        mydict["self.created_at"] = self.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f")
+        mydict["self.updated_at"] = self.updated_at.strftime("%Y-%m-%dT%H:%M:%S.%f")
         mydict["__class__"] =  type(self).__name__
         return mydict
