@@ -25,5 +25,5 @@ class BaseModel:
     def to_dict(self):
         self.created_at = self.created_at.isoformat()
         self.updated_at = self.updated_at.isoformat()
-        self.__class__
+        self.__class__ = BaseModel
         return self.__dict__
