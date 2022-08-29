@@ -16,7 +16,7 @@ class BaseModel:
 
 
     def __str__(self):
-        return "[BaseModel] (" + self.id + ")"
+        return  BaseModel.__name__ + "(" + self.id + ")" + str(self.__dict__)
 
     def save(self):
         change = datetime.now()
