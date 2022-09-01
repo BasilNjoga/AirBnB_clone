@@ -1,30 +1,53 @@
 #!/usr/bin/python3
-'''
-This is a file for all my models
-'''
-import uuid
+
+"""base model of the airbnb project"""
+
 from datetime import datetime
-from datetime import date
+import uuid
+import models
+
+time_fmt = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 class BaseModel:
-    """ defines all commond attributes and methods """
+    """parent class of the airbnb project"""
+
     def __init__(self, *args, **kwargs):
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        """Constructor for BaseModel objects"""
+
+        if kwargs:
+            for key, value in kwargs.items():
+                if key != "__class__":
+                    setattr(self, key, value)
+            if hasattr(self, "created_at")\
+                    and isinstance(self.created_at, str):
+                self.created_at = datetime.strptime(
+                    kwargs['created_at'], time_fmt)
+
+            if hasattr(self, "updated_at")\
+                    and isinstance(self.updated_at, str):
+                self.updated_at = datetime.strptime(
+                    kwargs['updated_at'], time_fmt)
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = self.created_at
+            models.storage.new(self)
 
     def __str__(self):
-        """Returns string representation of class"""
-        return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"
+        """string representation of of the BaseModel object"""
+        return f"{[type(self).__class__.__name__]} {(self.id)} {self.__dict__}"
 
     def save(self):
+        """updates updated_at with the current datetime"""
         self.updated_at = datetime.now()
+        models.storage.save()
 
     def to_dict(self):
-        """ Returns dictionary representation of all key/vlaues of dict"""
-        self.created_at = self.created_at.isoformat()
-        self.updated_at = self.updated_at.isoformat()
-        mydict = dict(self.__dict__)
-        mydict["__class__"] = type(self).__name__
-        return mydict
+        """returns a dict containing namespace attributes of the object"""
+        my_dict = {k: v for k, v in self.__dict__.items()}
+        my_dict['__class__'] = str(type(self).__name__)
+        my_dict["created_at"] = self.created_at.isoformat()
+        my_dict["updated_at"] = self.updated_at.isoformat()
+
+        return my_dict
