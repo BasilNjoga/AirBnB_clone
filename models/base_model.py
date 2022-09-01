@@ -1,64 +1,53 @@
-#!/usr/bin/env python3
-"""base class model to be inherited by other classes"""
+#!/usr/bin/python3
 
-from uuid import uuid4
+"""base model of the airbnb project"""
+
 from datetime import datetime
+import uuid
 import models
+
+time_fmt = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 class BaseModel:
-    """
-    defines base model class
-    """
+    """parent class of the airbnb project"""
 
-    def __init__(self, *args, **kwargs) -> None:
-        """instatiate base_class"""
+    def __init__(self, *args, **kwargs):
+        """Constructor for BaseModel objects"""
 
-        if len(kwargs) == 0:
-            self.id = str(uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
-            models.storage.new(self)
+        if kwargs:
+            for key, value in kwargs.items():
+                if key != "__class__":
+                    setattr(self, key, value)
+            if hasattr(self, "created_at")\
+                    and isinstance(self.created_at, str):
+                self.created_at = datetime.strptime(
+                    kwargs['created_at'], time_fmt)
+
+            if hasattr(self, "updated_at")\
+                    and isinstance(self.updated_at, str):
+                self.updated_at = datetime.strptime(
+                    kwargs['updated_at'], time_fmt)
         else:
-            kwargs["created_at"] = datetime.strptime(
-                    kwargs["created_at"],
-                    "%Y-%m-%dT%H:%M:%S.%f"
-                    )
-            kwargs["updated_at"] = datetime.strptime(
-                    kwargs["updated_at"],
-                    "%Y-%m-%dT%H:%M:%S.%f"
-                    )
-            for k, v in kwargs.items():
-                if "__class__" not in k:
-                    setattr(self, k, v)
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = self.created_at
+            models.storage.new(self)
+
+    def __str__(self):
+        """string representation of of the BaseModel object"""
+        return f"{[type(self).__class__.__name__]} {(self.id)} {self.__dict__}"
 
     def save(self):
-        """updates created at time"""
+        """updates updated_at with the current datetime"""
         self.updated_at = datetime.now()
         models.storage.save()
 
     def to_dict(self):
-        """return dictionary representation of base_model"""
-        dict_rep = dict(self.__dict__)
-        dict_rep["__class__"] = self.__class__.__name__
-        dict_rep["created_at"] = self.created_at.strftime(
-                "%Y-%m-%dT%H:%M:%S.%f")
-        dict_rep["updated_at"] = self.updated_at.strftime(
-                "%Y-%m-%dT%H:%M:%S.%f")
-        return (dict_rep)
+        """returns a dict containing namespace attributes of the object"""
+        my_dict = {k: v for k, v in self.__dict__.items()}
+        my_dict['__class__'] = str(type(self).__name__)
+        my_dict["created_at"] = self.created_at.isoformat()
+        my_dict["updated_at"] = self.updated_at.isoformat()
 
-    def __str__(self):
-        """
-        return string representation of the class
-        """
-        return (
-                f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
-                )
-
-    def __repr__(self) -> str:
-        """
-        returns official string representation of the class instance
-        """
-        return (
-                f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
-                )
+        return my_dict
